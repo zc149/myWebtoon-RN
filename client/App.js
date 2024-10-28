@@ -1,98 +1,62 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, Image, Modal, TouchableOpacity, TextInput, TouchableHighlight, TouchableWithoutFeedback } from 'react-native';
 import UpdateModal from './components/UpdateModal';
 import AddModal from './components/AddModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Axios from 'axios';
 
 export default function App() {
 
   const genres = ["전체", "로맨스", "판타지", "액션", "일상", "스릴러", "개그", "무협", "드라마", "감성", "스포츠"]
-  const dummy = [
-    {
-      webtoonId: 1,
-      webtoonTitle: "민간인 통제구역 - 일급기밀",
-      weebtoonGenre: "스릴러, 고자극스릴러, 자극적인, 시리어스, 사회고발, 프리퀄, 밀리터리, 하이퍼리얼리즘, 서스펜스",
-      totalEpisod: 83,
-      imageUrl: "https://image-comic.pstatic.net/webtoon/801324/thumbnail/thumbnail_IMAG21_201ca646-5c79-42d2-ad28-49a435dc362e.jpg",
-      complete: 0,
-      company: "naver",
-      connectUrl: "https://comic.naver.com/webtoon/list?titleId=801324"
-    },
-    {
-      webtoonId: 2,
-      webtoonTitle: "민간인 통제구역 - 일급기밀",
-      weebtoonGenre: "스릴러, 고자극스릴러, 자극적인, 시리어스, 사회고발, 프리퀄, 밀리터리, 하이퍼리얼리즘, 서스펜스",
-      totalEpisod: 83,
-      imageUrl: "https://image-comic.pstatic.net/webtoon/801324/thumbnail/thumbnail_IMAG21_201ca646-5c79-42d2-ad28-49a435dc362e.jpg",
-      complete: 0,
-      company: "naver",
-      connectUrl: "https://comic.naver.com/webtoon/list?titleId=801324"
-    },
-    {
-      webtoonId: 3,
-      webtoonTitle: "민간인 통제구역 - 일급기밀",
-      weebtoonGenre: "스릴러, 고자극스릴러, 자극적인, 시리어스, 사회고발, 프리퀄, 밀리터리, 하이퍼리얼리즘, 서스펜스",
-      totalEpisod: 83,
-      imageUrl: "https://image-comic.pstatic.net/webtoon/801324/thumbnail/thumbnail_IMAG21_201ca646-5c79-42d2-ad28-49a435dc362e.jpg",
-      complete: 0,
-      company: "naver",
-      connectUrl: "https://comic.naver.com/webtoon/list?titleId=801324"
-    },
-    {
-      webtoonId: 4,
-      webtoonTitle: "민간인 통제구역 - 일급기밀",
-      weebtoonGenre: "스릴러, 고자극스릴러, 자극적인, 시리어스, 사회고발, 프리퀄, 밀리터리, 하이퍼리얼리즘, 서스펜스",
-      totalEpisod: 83,
-      imageUrl: "https://image-comic.pstatic.net/webtoon/801324/thumbnail/thumbnail_IMAG21_201ca646-5c79-42d2-ad28-49a435dc362e.jpg",
-      complete: 0,
-      company: "naver",
-      connectUrl: "https://comic.naver.com/webtoon/list?titleId=801324"
-    },
-    {
-      webtoonId: 5,
-      webtoonTitle: "민간인 통제구역 - 일급기밀",
-      weebtoonGenre: "스릴러, 고자극스릴러, 자극적인, 시리어스, 사회고발, 프리퀄, 밀리터리, 하이퍼리얼리즘, 서스펜스",
-      totalEpisod: 83,
-      imageUrl: "https://image-comic.pstatic.net/webtoon/801324/thumbnail/thumbnail_IMAG21_201ca646-5c79-42d2-ad28-49a435dc362e.jpg",
-      complete: 0,
-      company: "naver",
-      connectUrl: "https://comic.naver.com/webtoon/list?titleId=801324"
-    },
-    {
-      webtoonId: 6,
-      webtoonTitle: "민간인 통제구역 - 일급기밀",
-      weebtoonGenre: "스릴러, 고자극스릴러, 자극적인, 시리어스, 사회고발, 프리퀄, 밀리터리, 하이퍼리얼리즘, 서스펜스",
-      totalEpisod: 83,
-      imageUrl: "https://image-comic.pstatic.net/webtoon/801324/thumbnail/thumbnail_IMAG21_201ca646-5c79-42d2-ad28-49a435dc362e.jpg",
-      complete: 0,
-      company: "naver",
-      connectUrl: "https://comic.naver.com/webtoon/list?titleId=801324"
-    },
-    {
-      webtoonId: 7,
-      webtoonTitle: "민간인 통제구역 - 일급기밀",
-      weebtoonGenre: "스릴러, 고자극스릴러, 자극적인, 시리어스, 사회고발, 프리퀄, 밀리터리, 하이퍼리얼리즘, 서스펜스",
-      totalEpisod: 83,
-      imageUrl: "https://image-comic.pstatic.net/webtoon/801324/thumbnail/thumbnail_IMAG21_201ca646-5c79-42d2-ad28-49a435dc362e.jpg",
-      complete: 0,
-      company: "naver",
-      connectUrl: "https://comic.naver.com/webtoon/list?titleId=801324"
-    },
-    {
-      webtoonId: 8,
-      webtoonTitle: "민간인 통제구역 - 일급기밀",
-      weebtoonGenre: "스릴러, 고자극스릴러, 자극적인, 시리어스, 사회고발, 프리퀄, 밀리터리, 하이퍼리얼리즘, 서스펜스",
-      totalEpisod: 83,
-      imageUrl: "https://image-comic.pstatic.net/webtoon/801324/thumbnail/thumbnail_IMAG21_201ca646-5c79-42d2-ad28-49a435dc362e.jpg",
-      complete: 0,
-      company: "naver",
-      connectUrl: "https://comic.naver.com/webtoon/list?titleId=801324"
-    },
-  ]
-
   const [onUpdateModal, setOnUpdateModal] = useState(false);
   const [selectedWebtoon, setSelectedWebtoon] = useState(null);
   const [onAddModal, setOnAddModal] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [myWebtoonList, setmyWebtoonList] = useState(null);
+
+  // 중복검사 관련 로직 필요
+  const generateRandomId = () => {
+    return 'id-' + Math.random().toString(36).substring(2, 9);
+  }
+
+  const initializeUserId = async () => {
+    let userId = await AsyncStorage.getItem('userId');
+    console.log(userId);
+
+    if (!userId) {
+      userId = generateRandomId();
+      await AsyncStorage.setItem('userId', userId);
+
+      Axios.post('http://192.168.56.1:3000/api/user/create', { userId: userId })
+        .then(res => {
+          console.log(res.data);
+          setmyWebtoonList(res.data);
+        })
+        .catch(error => console.log(error));
+
+    }
+    setUserId(userId);
+
+  }
+
+  const getMyWebtoonList = () => {
+
+    if (!userId) return;
+
+    Axios.post('http://192.168.56.1:3000/api/myPage/get/webtoon', { userId: userId })
+      .then(res => {
+        console.log(res.data);
+        setmyWebtoonList(res.data);
+      })
+      .catch(error => console.log(error));
+
+  }
+
+  useEffect(() => {
+    initializeUserId();
+    getMyWebtoonList();
+  }, [userId])
 
   return (
     <View style={styles.pageContainer}>
@@ -111,19 +75,29 @@ export default function App() {
       </ScrollView>
 
       <ScrollView contentContainerStyle={styles.webtoonList} showsVerticalScrollIndicator={false}>
-        {dummy.map((webtoon) =>
-          <Pressable style={styles.webtoonItem} key={webtoon.webtoonId} onPress={() => {
-            setSelectedWebtoon(webtoon);
-            setOnUpdateModal(true);
-          }}>
-            <Image source={require("./assets/images/image1.png")} style={styles.webtoonImage} />
-            <View style={styles.textContainer}>
-              <Text style={styles.textTitle}>{webtoon.webtoonTitle}</Text>
-              <Text>{webtoon.weebtoonGenre.slice(0, 10)}</Text>
-              <Text>총 {webtoon.totalEpisod}화, {webtoon.company}</Text>
-              <Text>10화까지 봄</Text>
-            </View>
-          </Pressable>
+        {myWebtoonList && myWebtoonList.length > 0 ? (
+          myWebtoonList.map((webtoon) => (
+            <Pressable
+              style={styles.webtoonItem}
+              key={webtoon.id}
+              onPress={() => {
+                setSelectedWebtoon(webtoon);
+                setOnUpdateModal(true);
+              }}
+            >
+              <Image source={{ uri: `http://192.168.56.1:3000/api/image/proxy?url=${encodeURIComponent(webtoon.image_url)}` }} style={styles.webtoonImage} />
+              <View style={styles.textContainer}>
+                <Text style={styles.textTitle}>{webtoon.title}</Text>
+                <Text>
+                  {webtoon.genre ? webtoon.genre.slice(0, 10) : '장르 정보 없음'}
+                </Text>
+                <Text>총 {webtoon.episod_count}화, {webtoon.company}</Text>
+                <Text>{webtoon.count}화까지 봄</Text>
+              </View>
+            </Pressable>
+          ))
+        ) : (
+          <Text>웹툰 목록이 없습니다.</Text>
         )}
       </ScrollView>
 
