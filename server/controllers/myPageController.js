@@ -77,10 +77,49 @@ const deleteWebtoon = async (req, res) => {
 
 }
 
+const searchWebtoon = async (req, res) => {
+    const title = req.body.title;
+
+    if (!title) {
+        return res.status(400).send("title이 필요합니다.");
+    }
+
+    try {
+        const result = await myPageService.searchWebtoonByTitle(title);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send("title이 필요합니다.")
+    }
+
+}
+
+const createAndSaveTempWebtoon = async (req, res) => {
+    const userId = req.body.userId;
+    const title = req.body.title;
+    const count = req.body.count;
+
+    if (!title) {
+        return res.status(400).send("title이 필요합니다.");
+    }
+
+    try {
+        const insertResult = await myPageService.createTempWebtoonByTitle(title);
+        const result = await myPageService.saveWebtoonById(userId, insertResult.insertId, count);
+        res.send(result);
+
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send("title이 필요합니다.")
+    }
+
+}
 
 module.exports = {
     getWebtoonList,
     saveWebtoon,
     updateWebtoon,
     deleteWebtoon,
+    searchWebtoon,
+    createAndSaveTempWebtoon,
 }

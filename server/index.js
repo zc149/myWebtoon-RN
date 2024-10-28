@@ -56,6 +56,8 @@ router.post('/api/myPage/get/webtoon', myPageController.getWebtoonList);
 router.post('/api/myPage/save/webtoon', myPageController.saveWebtoon);
 router.post('/api/myPage/update/webtoon', myPageController.updateWebtoon);
 router.post('/api/myPage/delete/webtoon', myPageController.deleteWebtoon);
+router.post('/api/myPage/search/webtoon', myPageController.searchWebtoon);
+router.post('/api/myPage/temp/webtoon', myPageController.createAndSaveTempWebtoon);
 
 app.use(router);
 

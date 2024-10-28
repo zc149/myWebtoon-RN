@@ -92,10 +92,41 @@ const deleteWebtoonById = (userId, webtoonId) => {
     });
 };
 
+const searchWebtoonByTitle = (title) => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT * FROM webtoon 
+                     WHERE REPLACE(title, ' ', '') LIKE CONCAT('%', REPLACE(?, ' ', ''), '%')
+                     AND image_url != ''`;
+
+        db.query(sql, [title], (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(result);
+        });
+
+    });
+};
+
+const createTempWebtoonByTitle = (title) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'INSERT INTO webtoon (title) VALUES (?)';
+
+        db.query(sql, [title], (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(result);
+        });
+
+    });
+};
 
 module.exports = {
     getWebtoonListById,
     saveWebtoonById,
     updateWebtoonById,
     deleteWebtoonById,
+    searchWebtoonByTitle,
+    createTempWebtoonByTitle,
 }
