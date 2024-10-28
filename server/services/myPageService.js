@@ -2,7 +2,7 @@ const db = require('../db');
 
 const getWebtoonListById = (userId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT webtoon_id, count FROM user_webtoon_record WHERE user_id = ?';
+        const sql = 'SELECT webtoon_id, count, update_date FROM user_webtoon_record WHERE user_id = ?';
 
         db.query(sql, [userId], (err, result) => {
             if (err) {
@@ -21,21 +21,19 @@ const getWebtoonListById = (userId) => {
                     return reject(err);
                 }
 
-                // webtoonResults와 count 값을 매핑하여 새로운 배열 생성
+                // webtoonResults와 count, update_date 값을 매핑하여 새로운 배열 생성
                 const enrichedResults = webtoonResults.map(webtoon => {
-                    const countObj = result.find(row => row.webtoon_id === webtoon.id);
+                    const record = result.find(row => row.webtoon_id === webtoon.id);
                     return {
                         ...webtoon,
-                        count: countObj ? countObj.count : 0
+                        count: record ? record.count : 0,
+                        updateDate: record ? record.update_date : null
                     };
                 });
 
                 resolve(enrichedResults);
-
             });
-
         });
-
     });
 };
 
@@ -49,7 +47,7 @@ const saveWebtoonById = (userId, webtoonId, count) => {
             }
 
             if (checkResult.length === 0) {
-                const sql = 'INSERT INTO user_webtoon_record (user_id, webtoon_id, count) VALUES (?, ?, ?)';
+                const sql = 'INSERT INTO user_webtoon_record (user_id, webtoon_id, count, update_date) VALUES (?, ?, ?, CURRENT_TIMESTAMP)';
 
                 db.query(sql, [userId, webtoonId, count], (err, result) => {
                     if (err) {
@@ -66,7 +64,7 @@ const saveWebtoonById = (userId, webtoonId, count) => {
 
 const updateWebtoonById = (userId, webtoonId, count) => {
     return new Promise((resolve, reject) => {
-        const sql = 'UPDATE user_webtoon_record SET count =? WHERE user_id = ? and webtoon_id =?'
+        const sql = 'UPDATE user_webtoon_record SET count = ?, update_date = CURRENT_TIMESTAMP WHERE user_id = ? AND webtoon_id = ?';
 
         db.query(sql, [count, userId, webtoonId], (err, result) => {
             if (err) {

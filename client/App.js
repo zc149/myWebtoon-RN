@@ -1,19 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, Image, Modal, TouchableOpacity, TextInput, TouchableHighlight, TouchableWithoutFeedback } from 'react-native';
-import UpdateModal from './components/UpdateModal';
-import AddModal from './components/AddModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Axios from 'axios';
+import WebtoonList from './components/WebtoonList';
+import DeleteModal from './components/DeleteModal';
+import SearchModal from './components/SearchModal';
+import SaveAndUpdateModal from './components/SaveAndUpdateModal';
 
 export default function App() {
 
-  const genres = ["전체", "로맨스", "판타지", "액션", "일상", "스릴러", "개그", "무협", "드라마", "감성", "스포츠"]
+  const genreList = ["전체", "로맨스", "판타지", "액션", "일상", "스릴러", "개그", "무협", "드라마", "감성", "스포츠"]
   const [onUpdateModal, setOnUpdateModal] = useState(false);
   const [selectedWebtoon, setSelectedWebtoon] = useState(null);
-  const [onAddModal, setOnAddModal] = useState(false);
+  const [onSearchModal, setOnSearchModal] = useState(false);
+  const [onDeleteModal, setOnDeleteModal] = useState(false);
   const [userId, setUserId] = useState(null);
   const [myWebtoonList, setmyWebtoonList] = useState(null);
+  const [selectedGenre, setSelectedGenre] = useState('전체');
+  const [selectedSort, setSelectedSort] = useState('에피소드');
+
 
   // 중복검사 관련 로직 필요
   const generateRandomId = () => {
@@ -30,7 +36,6 @@ export default function App() {
 
       Axios.post('http://192.168.56.1:3000/api/user/create', { userId: userId })
         .then(res => {
-          console.log(res.data);
           setmyWebtoonList(res.data);
         })
         .catch(error => console.log(error));
@@ -46,7 +51,6 @@ export default function App() {
 
     Axios.post('http://192.168.56.1:3000/api/myPage/get/webtoon', { userId: userId })
       .then(res => {
-        console.log(res.data);
         setmyWebtoonList(res.data);
       })
       .catch(error => console.log(error));
@@ -56,55 +60,45 @@ export default function App() {
   useEffect(() => {
     initializeUserId();
     getMyWebtoonList();
-  }, [userId])
+  }, [userId, onUpdateModal, onDeleteModal, onSearchModal])
 
   return (
     <View style={styles.pageContainer}>
       <Text style={styles.title}>웹툰 기록</Text>
       <View style={styles.plusBtnContainer}>
-        <Pressable onPress={() => setOnAddModal(true)}>
+        <Pressable onPress={() => setOnSearchModal(true)}>
           <Image source={require("./assets/images/plusBtn.png")} style={styles.plusBtn} />
         </Pressable>
       </View>
+
       <View style={styles.menubarContainer}>
-        <Text style={styles.menu}>에피소드</Text>
-        <Text style={styles.menu}>최근본</Text>
+        <Pressable style={selectedSort === '에피소드' ? styles.selectedMenu : null} onPress={() => setSelectedSort('에피소드')}>
+          <Text style={styles.menuText} >에피소드</Text>
+        </Pressable>
+        <Pressable style={selectedSort === '최근본' ? styles.selectedMenu : null} onPress={() => setSelectedSort('최근본')} >
+          <Text style={styles.menuText}>최근본</Text>
+        </Pressable>
       </View>
+
+
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.genreContainer}>
-        {genres.map((genre) => <Text style={styles.genre} key={genre}>{genre}</Text>)}
+        {genreList.map((genre) => (
+          <Pressable style={selectedGenre === genre ? styles.selectedGenre : styles.genre}
+            key={genre} onPress={() => setSelectedGenre(genre)}>
+            <Text >{genre}</Text>
+          </Pressable>))}
       </ScrollView>
 
-      <ScrollView contentContainerStyle={styles.webtoonList} showsVerticalScrollIndicator={false}>
-        {myWebtoonList && myWebtoonList.length > 0 ? (
-          myWebtoonList.map((webtoon) => (
-            <Pressable
-              style={styles.webtoonItem}
-              key={webtoon.id}
-              onPress={() => {
-                setSelectedWebtoon(webtoon);
-                setOnUpdateModal(true);
-              }}
-            >
-              <Image source={{ uri: `http://192.168.56.1:3000/api/image/proxy?url=${encodeURIComponent(webtoon.image_url)}` }} style={styles.webtoonImage} />
-              <View style={styles.textContainer}>
-                <Text style={styles.textTitle}>{webtoon.title}</Text>
-                <Text>
-                  {webtoon.genre ? webtoon.genre.slice(0, 10) : '장르 정보 없음'}
-                </Text>
-                <Text>총 {webtoon.episod_count}화, {webtoon.company}</Text>
-                <Text>{webtoon.count}화까지 봄</Text>
-              </View>
-            </Pressable>
-          ))
-        ) : (
-          <Text>웹툰 목록이 없습니다.</Text>
-        )}
-      </ScrollView>
+      <WebtoonList myWebtoonList={myWebtoonList} setSelectedWebtoon={setSelectedWebtoon} selectedSort={selectedSort}
+        setOnUpdateModal={setOnUpdateModal} setOnDeleteModal={setOnDeleteModal} genre={selectedGenre} />
 
-      {onAddModal && <AddModal visible={onAddModal} setModal={setOnAddModal} />}
+      {onSearchModal && <SearchModal visible={onSearchModal} setModal={setOnSearchModal} userId={userId} />}
 
-      {onUpdateModal && <UpdateModal webtoon={selectedWebtoon}
-        visible={onUpdateModal} setModal={setOnUpdateModal} />}
+      {onDeleteModal && <DeleteModal visible={onDeleteModal} setModal={setOnDeleteModal}
+        userId={userId} webtoon={selectedWebtoon} />}
+
+      {onUpdateModal && <SaveAndUpdateModal webtoon={selectedWebtoon} action={'update'}
+        visible={onUpdateModal} setModal={setOnUpdateModal} userId={userId} />}
 
     </View>
   );
@@ -138,44 +132,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 55,
     borderBottomWidth: 1,
   },
-  menu: {
+  menuText: {
     fontSize: 20,
-    fontWeight: '600'
+    fontWeight: 'bold'
+  },
+  selectedMenu: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#6B6868', // 선택된 항목의 밑줄 색상
   },
   genreContainer: {
     flexDirection: 'row',
-    marginTop: 10,
+    marginTop: 7,
     width: '90%',
     height: 28
   },
   genre: {
-    marginHorizontal: 12,
-  },
-  webtoonList: {
-    marginTop: 10,
-    width: '100%',
-  },
-  webtoonItem: {
-    flexDirection: 'row',
-    width: "90%",
-    height: 120,
-    marginVertical: 1,
-  },
-  webtoonImage: {
-    width: "27%",
-    height: 110,
+    marginHorizontal: 8,
+    backgroundColor: '#FFFFFF',
     borderRadius: 15,
-    borderWidth: 1,
-    resizeMode: 'cover',
-    margin: 4
-  },
-  textContainer: {
-    flex: 1,
-    paddingLeft: 15,
+    padding: 1,
+    justifyContent: 'center'
 
   },
-  textTitle: {
-    fontSize: 15,
-    fontWeight: 'bold'
+  selectedGenre: {
+    marginHorizontal: 8,
+    backgroundColor: '#DBD9D9',
+    borderRadius: 15,
+    padding: 1,
+    justifyContent: 'center'
   },
 });

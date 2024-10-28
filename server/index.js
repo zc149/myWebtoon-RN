@@ -20,11 +20,8 @@ app.get('/', (req, res) => {
 // 이미지 로드 -> 효율적 방법 모색중
 app.get('/api/image/proxy', (req, res) => {
     const imageUrl = req.query.url;
-    console.log(req.body);
 
-    console.log("cc");
-
-    if (!imageUrl) {
+    if (!imageUrl || imageUrl === null) {
         return res.status(400).send('Image URL 유효하지 않음');
     };
 
@@ -43,7 +40,6 @@ app.get('/api/image/proxy', (req, res) => {
 
         })
         .pipe(res);
-
 })
 
 

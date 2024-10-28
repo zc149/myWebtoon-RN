@@ -2,6 +2,7 @@ const myPageService = require('../services/myPageService');
 
 const getWebtoonList = async (req, res) => {
     const userId = req.body.userId;
+    console.log('aa');
 
     if (!userId) {
         return res.status(400).send("userID가 필요합니다.")
