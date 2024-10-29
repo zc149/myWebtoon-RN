@@ -4,6 +4,9 @@ import { Text, StyleSheet,View, ScrollView, Pressable, Image } from 'react-nativ
 
 export default function WebtoonList({myWebtoonList, setSelectedWebtoon, setOnUpdateModal, setOnDeleteModal, genre, selectedSort}) {
     
+  useEffect(() => {
+
+  }, [myWebtoonList, genre]);
 
     return (
         <ScrollView contentContainerStyle={styles.webtoonList} showsVerticalScrollIndicator={false}>
@@ -11,9 +14,9 @@ export default function WebtoonList({myWebtoonList, setSelectedWebtoon, setOnUpd
           myWebtoonList.filter((webtoon) => genre === '전체' || webtoon.genre.includes(genre))
             .sort((a, b) => {
               if (selectedSort === '최근본') {
-                    return new Date(b.updateDate) - new Date(a.updateDate); // 최근순 정렬
+                    return new Date(b.updateDate) - new Date(a.updateDate);
                 }
-                return 0; // 원래 순서 유지
+                return 0;
             }).map((webtoon) => (
             <Pressable
               style={styles.webtoonItem}
@@ -23,13 +26,13 @@ export default function WebtoonList({myWebtoonList, setSelectedWebtoon, setOnUpd
                 setOnUpdateModal(true);
               }}
             >
-              <Image source={{ uri: `http://192.168.56.1:3000/api/image/proxy?url=${encodeURIComponent(webtoon.image_url)}` }} style={styles.webtoonImage} />
+              <Image source={webtoon.image_url ? { uri: `http://192.168.56.1:3000/api/image/proxy?url=${encodeURIComponent(webtoon.image_url)}` } : require('../assets/images/lg_i15916647317548_noname.jpg')} style={styles.webtoonImage} />
               <View style={styles.textContainer}>
                 <Text style={styles.textTitle}>{webtoon.title}</Text>
                 <Text>
                   {webtoon.genre ? webtoon.genre.split(',').slice(0, 3).join(',') : '장르 정보 없음'}
                 </Text>
-                <Text>총 {webtoon.episod_count}화, {webtoon.company}</Text>
+                <Text> {webtoon.episod_count ? '총 ' + webtoon.episod_count + '화 ,' : '정보없음'} {webtoon.company}</Text>
                 <Text>{webtoon.count}화까지 봄</Text>
               </View>
 

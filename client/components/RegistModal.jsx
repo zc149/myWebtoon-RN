@@ -2,29 +2,26 @@ import React, { useState } from 'react';
 import Axios from 'axios';
 import { Text, StyleSheet,View, Modal, TextInput, TouchableHighlight, TouchableWithoutFeedback } from 'react-native';
 
-export default function UpdateModal({ visible, setModal,setSearchModal, webtoon, userId, action }) {
-  const [count, setCount] = useState(); 
+export default function RegistModal({ visible, setModal, setSearchModal, userId }) {
+    const [title, setTitle] = useState('');  
+    const [count, setCount] = useState(); 
   
 
-  const handleAction = () => {
-    const data = { userId: userId, webtoonId: webtoon.id, count: count };
+    const handleAction = () => {
+        const data = { userId: userId, title: title, count: count };
 
-    const isValidInteger = /^\d+$/.test(count.trim());
+        const isValidInteger = /^\d+$/.test(count.trim());
 
-    if (!isValidInteger) {
-      return;
-    }
-
-    const url = action === 'update' 
-      ? 'http://192.168.56.1:3000/api/myPage/update/webtoon' 
-      : 'http://192.168.56.1:3000/api/myPage/save/webtoon';
-
-    Axios.post(url, data)
-      .then(res => {
-        setModal(false);
-        setSearchModal(false);
-      })
-      .catch(error => console.log(error));
+        if (!isValidInteger) {
+        return;
+        }
+    
+        Axios.post('http://192.168.56.1:3000/api/myPage/temp/webtoon', data)
+        .then(res => {
+            setModal(false);
+            setSearchModal(false);
+        })
+        .catch(error => console.log(error));
   };
 
     return (
@@ -32,17 +29,19 @@ export default function UpdateModal({ visible, setModal,setSearchModal, webtoon,
               onRequestClose={() => setModal(false)}>
               <TouchableWithoutFeedback onPress={() => setModal(false)}>
                 <View style={styles.modalContainer}>
-                  <View style={styles.modalBox}>
-                    <Text style={styles.textTitle}>{webtoon.title}</Text>
+                    <View style={styles.modalBox}>
+                        
+                    <TextInput style={styles.input} placeholder='제목을 정확히 입력해주세요'
+                                    value={title} onChangeText={setTitle}/>
                     <TextInput style={styles.input} placeholder='어디까지 보셨나요?'
-                                value={count} onChangeText={setCount}
-                    />
+                            value={count} onChangeText={setCount} />
+                        
                     <TouchableHighlight
                       style={styles.modalUpdateBtn}
-                      onPress={handleAction}
-                    >
+                      onPress={handleAction}>
                       <Text style={{ textAlign: "center" }}>확인</Text>
                     </TouchableHighlight>
+                        
                   </View>
                 </View>
               </TouchableWithoutFeedback>
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    margin: 12,
+    margin: 4,
     borderWidth: 1,
     borderRadius: 15,
     padding: 10,
@@ -83,7 +82,8 @@ const styles = StyleSheet.create({
     height: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 5, 
+    borderRadius: 5,
+    marginTop: 5
   },
   textTitle: {
     fontSize: 15,

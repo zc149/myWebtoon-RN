@@ -108,7 +108,7 @@ const searchWebtoonByTitle = (title) => {
 
 const createTempWebtoonByTitle = (title) => {
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO webtoon (title) VALUES (?)';
+        const sql = 'INSERT INTO webtoon (title, genre) VALUES (?, "전체")';
 
         db.query(sql, [title], (err, result) => {
             if (err) {

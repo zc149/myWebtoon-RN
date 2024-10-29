@@ -28,7 +28,6 @@ export default function App() {
 
   const initializeUserId = async () => {
     let userId = await AsyncStorage.getItem('userId');
-    console.log(userId);
 
     if (!userId) {
       userId = generateRandomId();

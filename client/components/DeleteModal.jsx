@@ -11,7 +11,6 @@ export default function DeleteModal({ visible, setModal, webtoon, userId }) {
 
     Axios.post('http://192.168.56.1:3000/api/myPage/delete/webtoon', data)
       .then(res => {
-        console.log(res.data);
       })
       .catch(error => console.log(error));
 

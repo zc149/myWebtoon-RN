@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import Axios from 'axios';
 import { Text, StyleSheet, View, Modal, ScrollView, TextInput, TouchableHighlight, TouchableWithoutFeedback, Pressable, Image } from 'react-native';
 import SaveAndUpdateModal from './SaveAndUpdateModal';
+import RegistModal from './RegistModal';
 
 export default function SearchModal({ visible, setModal, userId }) {
   const [title, setTitle] = useState('');
   const [onAddModal, setOnAddModal] = useState(false);
+  const [onRegistModal, setOnRegistModal] = useState(false);
   const [selectedWebtoon, setSelectedWebtoon] = useState(null);
   const [searchedWebtoon, setSearchedWebtoon] = useState([]);
 
   const searchWebtoon = () => {
     Axios.post('http://192.168.56.1:3000/api/myPage/search/webtoon', { title: title })
       .then(res => {
-        console.log(res.data);
         setSearchedWebtoon(res.data);
       })
       .catch(error => console.log(error));
@@ -61,7 +62,19 @@ export default function SearchModal({ visible, setModal, userId }) {
                   </Pressable>
                 ))
               ) : (
-                <Text style={styles.noResultText}>검색 결과가 없습니다.</Text>
+                  <View>
+                    <Text style={styles.noResultText}>검색 결과가 없습니다.</Text>
+                    <Pressable onPress={() => setOnRegistModal(true)}>
+                      <Text style={styles.registText}>직접 등록하기</Text>
+                    </Pressable>
+                    
+                    {onRegistModal && <RegistModal visible={onRegistModal} setModal={setOnRegistModal}
+                      setSearchModal={setModal} userId={userId} />}
+
+
+                  </View>
+                  
+                  
               )}
 
               {onAddModal && <SaveAndUpdateModal webtoon={selectedWebtoon} action={'add'}
@@ -154,8 +167,14 @@ const styles = StyleSheet.create({
   },
   noResultText: {
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 5,
     fontSize: 16,
     color: 'gray',
+  },
+  registText: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 16,
+    color: '#0217FF',
   },
 });
