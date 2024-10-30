@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
     res.send('하잉~');
+    console.log(`Client IP: ${clientIp}`);
 })
 
 

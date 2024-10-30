@@ -29,17 +29,20 @@ export default function App() {
   const initializeUserId = async () => {
     let userId = await AsyncStorage.getItem('userId');
 
+    console.log(userId);
+
     if (!userId) {
       userId = generateRandomId();
       await AsyncStorage.setItem('userId', userId);
 
-      Axios.post('http://192.168.56.1:3000/api/user/create', { userId: userId })
+      Axios.post(process.env.EXPO_PUBLIC_API_URL + '/api/user/create', { userId: userId })
         .then(res => {
           setmyWebtoonList(res.data);
         })
         .catch(error => console.log(error));
 
     }
+
     setUserId(userId);
 
   }
@@ -48,7 +51,7 @@ export default function App() {
 
     if (!userId) return;
 
-    Axios.post('http://192.168.56.1:3000/api/myPage/get/webtoon', { userId: userId })
+    Axios.post(process.env.EXPO_PUBLIC_API_URL + '/api/myPage/get/webtoon', { userId: userId })
       .then(res => {
         setmyWebtoonList(res.data);
       })
@@ -62,43 +65,46 @@ export default function App() {
   }, [userId, onUpdateModal, onDeleteModal, onSearchModal])
 
   return (
-    <View style={styles.pageContainer}>
-      <Text style={styles.title}>웹툰 기록</Text>
-      <View style={styles.plusBtnContainer}>
-        <Pressable onPress={() => setOnSearchModal(true)}>
-          <Image source={require("./assets/images/plusBtn.png")} style={styles.plusBtn} />
-        </Pressable>
+    <View>
+      <StatusBar style='dark' backgroundColor="#ffffff" />
+      <View style={styles.pageContainer}>
+        <Text style={styles.title}>웹툰 기록</Text>
+        <View style={styles.plusBtnContainer}>
+          <Pressable onPress={() => setOnSearchModal(true)}>
+            <Image source={require("./assets/images/plusBtn.png")} style={styles.plusBtn} />
+          </Pressable>
+        </View>
+
+        <View style={styles.menubarContainer}>
+          <Pressable style={selectedSort === '에피소드' ? styles.selectedMenu : null} onPress={() => setSelectedSort('에피소드')}>
+            <Text style={styles.menuText} >에피소드</Text>
+          </Pressable>
+          <Pressable style={selectedSort === '최근본' ? styles.selectedMenu : null} onPress={() => setSelectedSort('최근본')} >
+            <Text style={styles.menuText}>최근본</Text>
+          </Pressable>
+        </View>
+
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.genreContainer}>
+          {genreList.map((genre) => (
+            <Pressable style={selectedGenre === genre ? styles.selectedGenre : styles.genre}
+              key={genre} onPress={() => setSelectedGenre(genre)}>
+              <Text >{genre}</Text>
+            </Pressable>))}
+        </ScrollView>
+
+        <WebtoonList myWebtoonList={myWebtoonList} setSelectedWebtoon={setSelectedWebtoon} selectedSort={selectedSort}
+          setOnUpdateModal={setOnUpdateModal} setOnDeleteModal={setOnDeleteModal} genre={selectedGenre} />
+
+        {onSearchModal && <SearchModal visible={onSearchModal} setModal={setOnSearchModal} userId={userId} />}
+
+        {onDeleteModal && <DeleteModal visible={onDeleteModal} setModal={setOnDeleteModal}
+          userId={userId} webtoon={selectedWebtoon} />}
+
+        {onUpdateModal && <SaveAndUpdateModal webtoon={selectedWebtoon} action={'update'}
+          visible={onUpdateModal} setModal={setOnUpdateModal} userId={userId} />}
+
       </View>
-
-      <View style={styles.menubarContainer}>
-        <Pressable style={selectedSort === '에피소드' ? styles.selectedMenu : null} onPress={() => setSelectedSort('에피소드')}>
-          <Text style={styles.menuText} >에피소드</Text>
-        </Pressable>
-        <Pressable style={selectedSort === '최근본' ? styles.selectedMenu : null} onPress={() => setSelectedSort('최근본')} >
-          <Text style={styles.menuText}>최근본</Text>
-        </Pressable>
-      </View>
-
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.genreContainer}>
-        {genreList.map((genre) => (
-          <Pressable style={selectedGenre === genre ? styles.selectedGenre : styles.genre}
-            key={genre} onPress={() => setSelectedGenre(genre)}>
-            <Text >{genre}</Text>
-          </Pressable>))}
-      </ScrollView>
-
-      <WebtoonList myWebtoonList={myWebtoonList} setSelectedWebtoon={setSelectedWebtoon} selectedSort={selectedSort}
-        setOnUpdateModal={setOnUpdateModal} setOnDeleteModal={setOnDeleteModal} genre={selectedGenre} />
-
-      {onSearchModal && <SearchModal visible={onSearchModal} setModal={setOnSearchModal} userId={userId} />}
-
-      {onDeleteModal && <DeleteModal visible={onDeleteModal} setModal={setOnDeleteModal}
-        userId={userId} webtoon={selectedWebtoon} />}
-
-      {onUpdateModal && <SaveAndUpdateModal webtoon={selectedWebtoon} action={'update'}
-        visible={onUpdateModal} setModal={setOnUpdateModal} userId={userId} />}
-
     </View>
   );
 }

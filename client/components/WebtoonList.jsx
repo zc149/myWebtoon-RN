@@ -26,7 +26,7 @@ export default function WebtoonList({myWebtoonList, setSelectedWebtoon, setOnUpd
                 setOnUpdateModal(true);
               }}
             >
-              <Image source={webtoon.image_url ? { uri: `http://192.168.56.1:3000/api/image/proxy?url=${encodeURIComponent(webtoon.image_url)}` } : require('../assets/images/lg_i15916647317548_noname.jpg')} style={styles.webtoonImage} />
+              <Image source={webtoon.image_url ? { uri: process.env.EXPO_PUBLIC_API_URL + `/api/image/proxy?url=${encodeURIComponent(webtoon.image_url)}` } : require('../assets/images/lg_i15916647317548_noname.jpg')} style={styles.webtoonImage} />
               <View style={styles.textContainer}>
                 <Text style={styles.textTitle}>{webtoon.title}</Text>
                 <Text>

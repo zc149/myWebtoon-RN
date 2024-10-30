@@ -1,12 +1,13 @@
 const mysql = require('mysql');
 
 const db = mysql.createConnection({
-    user: 'root',
-    host: 'localhost',
-    port: '3306',
-    password: '1234',
-    database: 'my_webtoon'
-})
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+});
+
 
 db.connect((err) => {
     if (err) {

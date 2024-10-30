@@ -16,13 +16,16 @@ export default function UpdateModal({ visible, setModal,setSearchModal, webtoon,
     }
 
     const url = action === 'update' 
-      ? 'http://192.168.56.1:3000/api/myPage/update/webtoon' 
-      : 'http://192.168.56.1:3000/api/myPage/save/webtoon';
+      ? process.env.EXPO_PUBLIC_API_URL + '/api/myPage/update/webtoon' 
+      : process.env.EXPO_PUBLIC_API_URL + '/api/myPage/save/webtoon';
 
     Axios.post(url, data)
       .then(res => {
         setModal(false);
-        setSearchModal(false);
+        if (setSearchModal) {
+          setSearchModal(false);
+        }
+        
       })
       .catch(error => console.log(error));
   };

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Axios from 'axios';
+
 import { Text, StyleSheet,View, Modal, TextInput, TouchableHighlight, TouchableWithoutFeedback } from 'react-native';
 
 export default function DeleteModal({ visible, setModal, webtoon, userId }) {
@@ -9,7 +10,7 @@ export default function DeleteModal({ visible, setModal, webtoon, userId }) {
       
       const data = { userId: userId, webtoonId: webtoon.id };
 
-    Axios.post('http://192.168.56.1:3000/api/myPage/delete/webtoon', data)
+    Axios.post( process.env.EXPO_PUBLIC_API_URL + '/api/myPage/delete/webtoon', data)
       .then(res => {
       })
       .catch(error => console.log(error));

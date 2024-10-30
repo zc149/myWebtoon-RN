@@ -12,7 +12,7 @@ export default function SearchModal({ visible, setModal, userId }) {
   const [searchedWebtoon, setSearchedWebtoon] = useState([]);
 
   const searchWebtoon = () => {
-    Axios.post('http://192.168.56.1:3000/api/myPage/search/webtoon', { title: title })
+    Axios.post(process.env.EXPO_PUBLIC_API_URL + '/api/myPage/search/webtoon', { title: title })
       .then(res => {
         setSearchedWebtoon(res.data);
       })
@@ -51,7 +51,7 @@ export default function SearchModal({ visible, setModal, userId }) {
                       setOnAddModal(true);
                     }}
                   >
-                    <Image source={{ uri: `http://192.168.56.1:3000/api/image/proxy?url=${encodeURIComponent(webtoon.image_url)}` }} style={styles.webtoonImage} />
+                    <Image source={{ uri: process.env.EXPO_PUBLIC_API_URL + `/api/image/proxy?url=${encodeURIComponent(webtoon.image_url)}` }} style={styles.webtoonImage} />
                     <View style={styles.textContainer}>
                       <Text style={styles.textTitle}>{webtoon.title}</Text>
                       <Text>

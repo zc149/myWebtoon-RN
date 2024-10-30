@@ -16,7 +16,7 @@ export default function RegistModal({ visible, setModal, setSearchModal, userId 
         return;
         }
     
-        Axios.post('http://192.168.56.1:3000/api/myPage/temp/webtoon', data)
+        Axios.post( process.env.EXPO_PUBLIC_API_URL + '/api/myPage/temp/webtoon', data)
         .then(res => {
             setModal(false);
             setSearchModal(false);

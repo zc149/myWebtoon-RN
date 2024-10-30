@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "myWebtoon",
+    "name": "눕툰",
     "slug": "myWebtoon",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,13 +15,30 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.jk.mywebtoon"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f6a4122e-a6ea-4391-88a5-7faddff566c7"
+      }
+    },
+    "plugins": [
+      [
+      "expo-build-properties",
+      {
+        "android": {
+          "usesCleartextTraffic": true
+        }
+      }
+    ]
+    ]
   }
 }
